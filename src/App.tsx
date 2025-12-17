@@ -1,27 +1,57 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { Heart, Cake, Sparkles } from 'lucide-react';
+import { Heart, Cake, Sparkles, Flame, Music, } from 'lucide-react';
 import { FloatingHearts } from './components/FloatingHearts';
+import mpitKecil from './mpitkecil.jpeg';
+import heavyBirthyay from './heavyBirthyay.mp3';
 
 type Stage = 'opening' | 'blowing' | 'wish' | 'letter';
 
 function App() {
   const [stage, setStage] = useState<Stage>('opening');
   const [blowProgress, setBlowProgress] = useState(0);
-  const [wish, setWish] = useState('');
-  const [submittedWish, setSubmittedWish] = useState('');
   const [celebrationHappened, setCelebrationHappened] = useState(false);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const audioRef = useState(new Audio(heavyBirthyay))[0];
+
+  useEffect(() => {
+    audioRef.loop = true;
+    const playAudio = async () => {
+      try {
+        await audioRef.play();
+        setIsMusicPlaying(true);
+      } catch (err) {
+        console.log('Autoplay blocked:', err);
+        setIsMusicPlaying(false);
+      }
+    };
+    playAudio();
+    return () => {
+      audioRef.pause();
+    };
+  }, [audioRef]);
+
+  // const toggleMusic = () => {
+  //   if (isMusicPlaying) {
+  //     audioRef.pause();
+  //     setIsMusicPlaying(false);
+  //   } else {
+  //     audioRef.play();
+  //     setIsMusicPlaying(true);
+  //   }
+  // };
 
   const handleBlowCandle = () => {
     if (blowProgress < 100) {
-      const newProgress = Math.min(blowProgress + 12, 100);
+      const increment = blowProgress < 70 ? 10 : 1;
+      const newProgress = Math.min(blowProgress + increment, 100);
       setBlowProgress(newProgress);
 
       if (newProgress >= 100 && !celebrationHappened) {
         setCelebrationHappened(true);
         triggerConfetti();
-        setTimeout(() => setStage('wish'), 2000);
+        setTimeout(() => setStage('letter'), 2000);
       }
     }
   };
@@ -59,13 +89,6 @@ function App() {
     }, 250);
   };
 
-  const handleSubmitWish = () => {
-    if (wish.trim()) {
-      setSubmittedWish(wish);
-      setStage('letter');
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-red-950 to-gray-900 relative overflow-hidden">
       <FloatingHearts />
@@ -88,10 +111,12 @@ function App() {
                 className="mb-8 inline-block"
               >
                 <div className="relative">
-                  <div className="w-48 h-48 rounded-full bg-gradient-to-br from-rose-gold to-warm-pink mx-auto overflow-hidden border-4 border-rose-gold shadow-2xl">
-                    <div className="w-full h-full bg-gradient-to-br from-pink-200 to-rose-300 flex items-center justify-center">
-                      <Heart size={80} className="text-white fill-white opacity-30" />
-                    </div>
+                  <div className="w-48 h-48 rounded-full border-4 border-rose-gold shadow-2xl mx-auto overflow-hidden">
+                    <img
+                      src={mpitKecil}
+                      alt="Fitri Awaliyah Muslim"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <motion.div
                     className="absolute inset-0 rounded-full"
@@ -111,9 +136,9 @@ function App() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="font-serif text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-rose-gold via-warm-pink to-rose-gold mb-4"
+                className="font-serif text-3xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-rose-gold via-warm-pink to-rose-gold mb-4"
               >
-                Happy 22nd Birthday, Sayang
+                Happy 22nd Birthday, Sayangnya Nares
               </motion.h1>
 
               <motion.div
@@ -122,8 +147,8 @@ function App() {
                 transition={{ delay: 0.9 }}
                 className="mb-8"
               >
-                <p className="font-serif text-3xl md:text-4xl text-warm-pink italic mb-2">
-                  Fitri Awaliyah Muslim
+                <p className="font-serif text-xl md:text-4xl text-warm-pink italic mb-2">
+                  Ciee Yang Ulang Tahun Hari ini
                 </p>
                 <div className="flex justify-center gap-2">
                   {[...Array(5)].map((_, i) => (
@@ -145,20 +170,31 @@ function App() {
               >
                 <div className="relative inline-block">
                   <Cake size={100} className="text-warm-pink mx-auto mb-4" />
-                  <div className="absolute top-2 left-1/2 transform -translate-x-1/2 flex gap-2">
+                  <div className="absolute top-[-10px] left-1/2 transform -translate-x-1/2 flex">
                     <motion.div
                       animate={{ scaleY: [1, 0.9, 1] }}
                       transition={{ duration: 1, repeat: Infinity }}
-                      className="w-1 h-8 bg-gradient-to-t from-yellow-500 to-orange-400 rounded-full"
-                    />
+                      className="origin-bottom"
+                    >
+                      <Flame size={24} className="text-yellow-400 fill-yellow-400" />
+                    </motion.div>
                     <motion.div
                       animate={{ scaleY: [1, 0.9, 1] }}
                       transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}
-                      className="w-1 h-8 bg-gradient-to-t from-yellow-500 to-orange-400 rounded-full"
-                    />
+                      className="origin-bottom"
+                    >
+                      <Flame size={24} className="text-yellow-400 fill-yellow-400" />
+                    </motion.div>
+                    <motion.div
+                      animate={{ scaleY: [1, 0.9, 1] }}
+                      transition={{ duration: 1, repeat: Infinity, delay: 0.4 }}
+                      className="origin-bottom"
+                    >
+                      <Flame size={24} className="text-yellow-400 fill-yellow-400" />
+                    </motion.div>
                   </div>
                 </div>
-                <p className="text-warm-pink text-xl font-sans">22</p>
+                <p className="text-warm-pink text-m font-serif">Ini Kuenya Online Dulu ya, nanti aslinya nyusul</p>
               </motion.div>
 
               <motion.button
@@ -167,10 +203,17 @@ function App() {
                 transition={{ delay: 1.5 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => setStage('blowing')}
-                className="bg-gradient-to-r from-rose-gold to-warm-pink text-white px-10 py-4 rounded-full font-sans text-lg font-semibold shadow-2xl hover:shadow-rose-gold/50 transition-all duration-300"
+                onClick={() => {
+                  if (!isMusicPlaying) {
+                    audioRef.play();
+                    setIsMusicPlaying(true);
+                  }
+                  setStage('blowing');
+                }}
+                className="bg-gradient-to-r from-rose-gold to-warm-pink text-white px-10 py-4 rounded-full font-sans text-lg font-semibold shadow-2xl hover:shadow-rose-gold/50 transition-all duration-300 flex items-center gap-2 mx-auto"
               >
-                Bantu aku tiup lilinnya ya...
+                {!isMusicPlaying ? <Music className="w-5 h-5" /> : null}
+                Tap Tap Tiup Lilin
               </motion.button>
             </motion.div>
           )}
@@ -197,7 +240,7 @@ function App() {
                     {blowProgress < 100 && (
                       <motion.div
                         exit={{ opacity: 0, scale: 0 }}
-                        className="absolute top-4 left-1/2 transform -translate-x-1/2 flex gap-2"
+                        className="absolute top-[-10px] left-1/2 transform -translate-x-1/2 flex"
                       >
                         <motion.div
                           animate={{
@@ -206,8 +249,10 @@ function App() {
                             x: [-2, 2, -2],
                           }}
                           transition={{ duration: 0.8, repeat: Infinity }}
-                          className="w-2 h-10 bg-gradient-to-t from-yellow-500 to-orange-400 rounded-full"
-                        />
+                          className="origin-bottom"
+                        >
+                          <Flame size={24} className="text-yellow-400 fill-yellow-400" />
+                        </motion.div>
                         <motion.div
                           animate={{
                             scaleY: [1, 0.9, 1],
@@ -215,8 +260,21 @@ function App() {
                             x: [2, -2, 2],
                           }}
                           transition={{ duration: 0.8, repeat: Infinity, delay: 0.2 }}
-                          className="w-2 h-10 bg-gradient-to-t from-yellow-500 to-orange-400 rounded-full"
-                        />
+                          className="origin-bottom"
+                        >
+                          <Flame size={24} className="text-yellow-400 fill-yellow-400" />
+                        </motion.div>
+                        <motion.div
+                          animate={{
+                            scaleY: [1, 0.9, 1],
+                            opacity: 1 - blowProgress / 100,
+                            x: [-2, 2, -2],
+                          }}
+                          transition={{ duration: 0.8, repeat: Infinity, delay: 0.4 }}
+                          className="origin-bottom"
+                        >
+                          <Flame size={24} className="text-yellow-400 fill-yellow-400" />
+                        </motion.div>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -241,11 +299,46 @@ function App() {
                     key={blowProgress}
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-warm-pink text-2xl font-sans mb-8"
+                    className="text-warm-pink text-xl font-serif mb-8"
                   >
-                    {blowProgress === 0 && 'Tiup lagi yang kuat... 🥰'}
-                    {blowProgress > 0 && blowProgress < 50 && 'Ayo sayang, lagi... 💕'}
-                    {blowProgress >= 50 && blowProgress < 100 && 'Hampir, hampir... ❤️'}
+                    {blowProgress === 0 && 'Tiup yang kuat tap tap ya 🥰'}
+                    {blowProgress > 0 && blowProgress <= 10 && 'Ayo semangat sayang! 💕'}
+                    {blowProgress > 10 && blowProgress <= 20 && 'Tiup Terus Biar Ga Dapet Lemburan Pa Hafif'}
+                    {blowProgress > 20 && blowProgress <= 30 && 'Tiup Biar Dapet Kuenya 🎂'}
+                    {blowProgress > 30 && blowProgress <= 40 && 'Lagi... Lagi... 🥰'}
+                    {blowProgress > 40 && blowProgress <= 50 && 'Tiup Lagi Biar Dapet Motor nih! ❤️'}
+                    {blowProgress > 50 && blowProgress <= 60 && 'Makin kuat tiupnya! 💨'}
+                    {blowProgress > 60 && blowProgress <= 70 && 'Tiup Lagi Biar Dapet iPhone 17 Pro Max! 📱'}
+                    {blowProgress === 71 && 'Tiup biar rezeki lancar, bisa healing terus! ✈️'}
+                    {blowProgress === 72 && 'Manifesting saldo ATM tumpah tumpah! 💸'}
+                    {blowProgress === 73 && 'Bebas overthinking tiap malem! 🧠'}
+                    {blowProgress === 74 && 'Tiup biar skincare mahal dibayarin aku! ✨'}
+                    {blowProgress === 75 && 'Tiup Biar Naik Gaji 📈'}
+                    {blowProgress === 76 && 'Bisa checkout keranjang oren tanpa mikir harga! 🛒'}
+                    {blowProgress === 77 && 'Dapet tiket konser BlackPink paling depan! 🎫'}
+                    {blowProgress === 78 && 'Tiup biar dapet Princess Treatment tiap hari 👑'}
+                    {blowProgress === 79 && 'Circle pertemanan yang no drama club! 👯‍♀️'}
+                    {blowProgress === 80 && 'Sehat terus, kalo diet yang penting sehat! 🍔'}
+                    {blowProgress === 81 && 'Karir Slay, Gaji Slay, Mental Slay! 💅'}
+                    {blowProgress === 82 && 'Jauh dari atasan toxic & panggilan dadakan! 🚫'}
+                    {blowProgress === 83 && 'Tiup demi Work-Life Balance yang HQQ! ⚖️'}
+                    {blowProgress === 84 && 'Good Vibes & Good Rekening Only! 🌈'}
+                    {blowProgress === 85 && 'Outfit lucu tiap hari tanpa bingung mau pake apa! 👗'}
+                    {blowProgress === 86 && 'Jodohnya aku terus selamanya (ini wajib)! 💑'}
+                    {blowProgress === 87 && 'Punya rumah estetik ala Pinterest! 🏠'}
+                    {blowProgress === 88 && 'Tiup biar bisa WFA dari Bali! 🏖️'}
+                    {blowProgress === 89 && 'Koleksi Labubu lengkap selemari! 🧸'}
+                    {blowProgress === 90 && 'Internet kenceng, rezeki makin kenceng! 🚀'}
+                    {blowProgress === 91 && 'Dikit lagi menuju Financial Freedom usia muda! 💰'}
+                    {blowProgress === 92 && 'Tiup sekuat tenaga demi masa depan cerah! ☀️'}
+                    {blowProgress === 93 && 'Ayo sayang, demi wishlist terkabul semua! 📝'}
+                    {blowProgress === 94 && 'Energi Main Character keluarin semua! ✨'}
+                    {blowProgress === 95 && 'Tiup biar ga kena macetnya jalanan kalo dah punya motor!'}
+                    {blowProgress === 96 && '4% lagi menuju saldo atm 100 Juta! 😍'}
+                    {blowProgress === 97 && '3% lagi! Siap-siap Make a Wish! 🎂'}
+                    {blowProgress === 98 && '2% lagi! Tarik napas panjang cantik! 😤'}
+                    {blowProgress === 99 && '1% LAGI! Bedoa biar cepet dikabulin nikahnya! 💥'}
+                    {blowProgress === 100 && 'Udah Beres BB apa masih mau tap tap lagi? 🎉'}
                   </motion.p>
 
                   <div className="w-full max-w-md mx-auto mb-8">
@@ -299,65 +392,13 @@ function App() {
                   transition={{ delay: 0.5 }}
                 >
                   <p className="text-warm-pink text-3xl font-serif mb-4">
-                    Yay! Lilinnya padam! 🎉
-                  </p>
-                  <p className="text-rose-gold text-xl font-sans">
-                    Sekarang waktunya bikin harapan...
+                    Happy Birthday BB!🎉
                   </p>
                 </motion.div>
               )}
             </motion.div>
           )}
 
-          {stage === 'wish' && (
-            <motion.div
-              key="wish"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.8 }}
-              className="text-center max-w-2xl w-full"
-            >
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="mb-8"
-              >
-                <Sparkles size={60} className="text-yellow-400 fill-yellow-400 mx-auto mb-6" />
-                <h2 className="font-serif text-4xl md:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-rose-gold to-warm-pink mb-4">
-                  Sekarang, sebutkan satu harapanmu di usia 22 ini...
-                </h2>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="mb-8"
-              >
-                <textarea
-                  value={wish}
-                  onChange={(e) => setWish(e.target.value)}
-                  placeholder="Tuliskan harapanmu di sini..."
-                  className="w-full h-40 px-6 py-4 bg-gray-900/50 border-2 border-rose-gold/30 rounded-2xl text-warm-pink placeholder-rose-gold/40 font-sans text-lg focus:outline-none focus:border-rose-gold transition-all duration-300 resize-none"
-                />
-              </motion.div>
-
-              <motion.button
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleSubmitWish}
-                disabled={!wish.trim()}
-                className="bg-gradient-to-r from-rose-gold to-warm-pink text-white px-10 py-4 rounded-full font-sans text-lg font-semibold shadow-2xl hover:shadow-rose-gold/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Aamiin. Kirim Harapan ✨
-              </motion.button>
-            </motion.div>
-          )}
 
           {stage === 'letter' && (
             <motion.div
@@ -376,8 +417,8 @@ function App() {
               >
                 <Heart size={60} className="text-rose-gold fill-rose-gold mx-auto mb-6" />
 
-                <h2 className="font-serif text-4xl md:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-rose-gold to-warm-pink mb-8">
-                  Untuk Kamu...
+                <h2 className="font-serif text-3xl md:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-rose-gold to-warm-pink mb-8">
+                  Buat Yang Lagi Ulangtahun nih
                 </h2>
 
                 <motion.div
@@ -387,31 +428,22 @@ function App() {
                   className="text-left mb-8"
                 >
                   <p className="text-warm-pink font-sans text-lg md:text-xl leading-relaxed mb-4">
-                    Selamat ulang tahun, cantik. Semoga di angka 22 ini kamu makin bahagia,
-                    makin dewasa, dan terus sama aku ya. Aku sayang banget sama kamu.
+                    Happy Birthday, babyyyy. Welcome to your 22 era! ✨ Di umur segini I hope the best for your career,
+                    makin wise, and obviously... please stay with me terus ya....
                   </p>
                   <p className="text-warm-pink font-sans text-lg md:text-xl leading-relaxed mb-4">
-                    Terima kasih sudah jadi yang terbaik buat aku. Semoga semua harapan dan
-                    mimpi kamu di tahun ini bisa terwujud. Aku akan selalu ada buat kamu.
+                    Thank you for being the best partner ever. Manifesting semua dreams and goals kamu tahun ini bisa achieved.
+                    I promise I'll always be your support system. Let's keep this going strong, okay?
+                    And please, stop asking aku sayang apa enggak, because honestly... you are my everything. 💖
+                  </p>
+                  <p className="text-warm-pink font-sans text-lg md:text-xl leading-relaxed mb-4">
+                    Aghnjayy, Romantis ga :P
                   </p>
                   <p className="text-rose-gold font-serif text-2xl italic text-center mt-6">
-                    Love you! ❤️
+                    Wuvv UUUU! ❤️
                   </p>
                 </motion.div>
 
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.9 }}
-                  className="bg-gray-900/50 p-6 rounded-2xl border border-rose-gold/20"
-                >
-                  <p className="text-rose-gold font-sans text-sm mb-3 italic">
-                    Harapanmu sudah tercatat di hatiku:
-                  </p>
-                  <p className="text-warm-pink font-sans text-base leading-relaxed">
-                    "{submittedWish}"
-                  </p>
-                </motion.div>
 
                 <motion.div
                   initial={{ opacity: 0 }}
